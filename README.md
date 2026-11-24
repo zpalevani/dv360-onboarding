@@ -14,7 +14,7 @@ Checklist ticks and lab answers are saved in the visitor's browser (`localStorag
 
 ## Security headers and crawling
 
-`_headers` sets the security headers Cloudflare Pages sends with every page, including a Content-Security-Policy. It is the same policy as the GA4 and SA360 onboarding sites.
+`_headers` sets the security headers Cloudflare sends with every page, including a Content-Security-Policy. It is the same policy as the GA4 and SA360 onboarding sites.
 
 The page loads Google Tag Manager (`GTM-TTJX54`, the same container as the other onboarding sites), whose Custom HTML tags are added to the page inline. So `script-src` allows inline scripts (`'unsafe-inline'`) instead of listing them by hash. Don't add `sha256-` hashes back: when a hash is present, browsers ignore `'unsafe-inline'` and GTM's tags stop running.
 
@@ -22,7 +22,7 @@ The policy allows Google Tag Manager and Google Analytics (`*.googletagmanager.c
 
 The policy also allows Cloudflare Web Analytics, which Cloudflare adds to the page automatically: its script from `static.cloudflareinsights.com`, and its reports to this site's own `/cdn-cgi/rum` endpoint (`connect-src 'self'`) or to `cloudflareinsights.com`.
 
-`robots.txt`, the robots `<meta>` tag and the `X-Robots-Tag` header ask search engines and AI crawlers not to index or use the site. They don't make it private: anyone with the link can still read it. `_redirects` sends `/README.md` to the home page.
+`robots.txt`, the robots `<meta>` tag and the `X-Robots-Tag` header ask search engines and AI crawlers not to index or use the site. They don't make it private: anyone with the link can still read it. `_redirects` sends `/README.md` to the home page, and `.assetsignore` keeps repo files such as this README and Cloudflare's generated `wrangler.jsonc` from being served. Anything else you add to the repo is public unless you list it there.
 
 ## Sources and accuracy
 
@@ -47,9 +47,8 @@ After a change, check the JavaScript syntax, HTML nesting and duplicate IDs, the
 
 ## Deploying
 
-There is no build step. Everything is in `index.html`, which is served as-is by Cloudflare Pages:
+There is no build step. Everything is in `index.html`, served as-is by a Cloudflare Worker (`dv360-onboarding`) with static assets, connected to this repo through Cloudflare's Git integration. A push to `main` deploys the site.
 
-- Framework preset: None
 - Build command: *(empty)*
-- Build output directory: `/`
+- Cloudflare generates a `wrangler.jsonc` that serves the repo root; `.assetsignore` keeps it off the site.
 - Custom domain: `dv360-onboarding.zarapalevani.com`
